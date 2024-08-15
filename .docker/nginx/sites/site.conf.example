@@ -1,0 +1,17 @@
+server {
+    listen 80;
+    server_name example;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name example;
+    root /var/www/html/public;
+
+    access_log /var/log/nginx/access-example.log;
+    error_log /var/log/nginx/error-example.log;
+
+    include /etc/nginx/conf.d/ssl.conf;
+    include /etc/nginx/conf.d/symfony.conf;
+}
