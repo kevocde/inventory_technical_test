@@ -14,9 +14,9 @@ class Inventory
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\OneToOne(targetEntity: Product::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Product $product_id = null;
+    private ?Product $product = null;
 
     #[ORM\Column]
     private ?float $quantity = null;
@@ -33,14 +33,14 @@ class Inventory
         return $this;
     }
 
-    public function getProductId(): ?Product
+    public function getProduct(): ?Product
     {
-        return $this->product_id;
+        return $this->product;
     }
 
-    public function setProductId(?Product $product_id): static
+    public function setProduct(?Product $product): static
     {
-        $this->product_id = $product_id;
+        $this->product = $product;
 
         return $this;
     }
@@ -55,5 +55,14 @@ class Inventory
         $this->quantity = $quantity;
 
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'product' => $this->getProduct()->toArray(),
+            'quantity' => $this->getQuantity(),
+        ];
     }
 }
