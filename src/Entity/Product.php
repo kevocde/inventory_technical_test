@@ -26,12 +26,15 @@ class Product
     #[ORM\Column]
     private ?bool $weighted = null;
 
-    #[ORM\Column]
-    private ?float $stock = null;
-
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getProductId(): ?int
@@ -82,18 +85,6 @@ class Product
         return $this;
     }
 
-    public function getStock(): ?float
-    {
-        return $this->stock;
-    }
-
-    public function setStock(float $stock): static
-    {
-        $this->stock = $stock;
-
-        return $this;
-    }
-
     /**
      * Returns the total price of the product by quantity
      *
@@ -103,5 +94,16 @@ class Product
     public function getTotalByQuantity(int $quantity): float
     {
         return $this->price * $quantity;
+    }
+
+    public static function getProductInstance(Product $product): self
+    {
+        $specialized = new self();
+        $specialized->setId($product->getId());
+        $specialized->setName($product->getName());
+        $specialized->setPrice($product->getPrice());
+        $specialized->setWeighted($product->isWeighted());
+
+        return $specialized;
     }
 }
