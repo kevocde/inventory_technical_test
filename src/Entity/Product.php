@@ -14,9 +14,6 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $product_id = null;
-
     #[ORM\Column(length: 100)]
     private ?string $name = null;
 
@@ -37,18 +34,6 @@ class Product
     public function setId(int $id): static
     {
         $this->id = $id;
-        return $this;
-    }
-
-    public function getProductId(): ?int
-    {
-        return $this->product_id;
-    }
-
-    public function setProductId(int $product_id): static
-    {
-        $this->product_id = $product_id;
-
         return $this;
     }
 
@@ -109,6 +94,17 @@ class Product
     public function getTotalByQuantity(int $quantity): float
     {
         return $this->price * $quantity;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'price' => $this->price,
+            'units' => $this->units,
+            'weighted' => $this->weighted,
+        ];
     }
 
     public static function getProductInstance(Product $product): self
