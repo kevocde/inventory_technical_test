@@ -23,6 +23,9 @@ class Product
     #[ORM\Column(nullable: true)]
     private ?float $price = null;
 
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?string $units = null;
+
     #[ORM\Column]
     private ?bool $weighted = null;
 
@@ -69,6 +72,18 @@ class Product
     public function setPrice(?float $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getUnits(): ?string
+    {
+        return $this->units;
+    }
+
+    public function setUnits(?string $units): static
+    {
+        $this->units = $units;
 
         return $this;
     }
