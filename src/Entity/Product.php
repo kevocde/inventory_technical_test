@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
@@ -25,6 +27,17 @@ class Product
 
     #[ORM\Column]
     private ?bool $weighted = null;
+
+    /**
+     * @var Collection<int, CartItem>
+     */
+    #[ORM\ManyToMany(targetEntity: CartItem::class, mappedBy: 'product')]
+    private Collection $cartItems;
+
+    public function __construct()
+    {
+        $this->cartItems = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -107,14 +120,41 @@ class Product
         ];
     }
 
-    public static function getProductInstance(Product $product): self
+    public static function getProductInstance(Product $product, string $class): self
     {
-        $specialized = new self();
+        $specialized = new $class();
         $specialized->setId($product->getId());
         $specialized->setName($product->getName());
         $specialized->setPrice($product->getPrice());
         $specialized->setWeighted($product->isWeighted());
 
         return $specialized;
+    }
+
+    /**
+     * @return Collection<int, CartItem>
+     */
+    public function getCartItems(): Collection
+    {
+        return $this->cartItems;
+    }
+
+    public function addCartItem(CartItem $cartItem): static
+    {
+        if (!$this->cartItems->contains($cartItem)) {
+            $this->cartItems->add($cartItem);
+            $cartItem->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCartItem(CartItem $cartItem): static
+    {
+        if ($this->cartItems->removeElement($cartItem)) {
+            $cartItem->removeProduct($this);
+        }
+
+        return $this;
     }
 }
