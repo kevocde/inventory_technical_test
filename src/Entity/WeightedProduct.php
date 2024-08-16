@@ -8,6 +8,12 @@ class WeightedProduct extends Product
 
     public function getTotalByQuantity(int $quantity): float
     {
-        return ($this->getPrice() * $quantity) * (1 + (self::DISCONT / 100));
+        $price = $this->getPrice();
+
+        if ($quantity >= 10) {
+            $price -= $price * (self::DISCONT / 100);
+        }
+
+        return $price * $quantity;
     }
 }
