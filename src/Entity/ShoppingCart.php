@@ -46,26 +46,28 @@ class ShoppingCart
         return $this->cartItems;
     }
 
-    public function addCartItem(CartItem $cartItem): static
+    public function addCartItem(CartItem $cartItem): CartItem
     {
-        if (!$this->cartItems->contains($cartItem)) {
-            $this->cartItems->add($cartItem);
-            $cartItem->setShoppingCart($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCartItem(CartItem $cartItem): static
-    {
-        if ($this->cartItems->removeElement($cartItem)) {
-            // set the owning side to null (unless already changed)
-            if ($cartItem->getShoppingCart() === $this) {
-                $cartItem->setShoppingCart(null);
+        foreach ($this->getCartItems() as $item) {
+            if ($item->getProduct()->first()->getId() === $cartItem->getProduct()->first()->getId()) {
+                $item->setQuantity($item->getQuantity() + $cartItem->getQuantity());
+                return $item;
             }
         }
 
-        return $this;
+        return $cartItem->setShoppingCart($this);
+    }
+
+    public function removeCartItem(CartItem $cartItem): CartItem
+    {
+        foreach ($this->getCartItems() as $item) {
+            if ($item->getProduct()->first()->getId() === $cartItem->getProduct()->first()->getId()) {
+                $item->setQuantity($item->getQuantity() - $cartItem->getQuantity());
+                return $item;
+            }
+        }
+
+        return $cartItem->setShoppingCart($this);
     }
 
     public function toArray(): array

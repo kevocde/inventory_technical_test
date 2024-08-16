@@ -25,7 +25,6 @@ class DashboardController extends AbstractController
     {
         $inventories = $this->entityManager->getRepository(Inventory::class)->findAll();
         $shoppingCart = $this->entityManager->getRepository(ShoppingCart::class)->find(1);
-        
 
         return $this->json([
             'products' => [
@@ -35,5 +34,39 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    
+    #[Route('/cart/{product}', name: 'add_to_cart', methods: ['PUT'])]
+    public function addToCart(Request $request, Product $product)
+    {
+        $shoppingCart = $this->entityManager->getRepository(ShoppingCart::class)->find(1);
+
+        $cartItem = new CartItem();
+        $cartItem->addProduct($product);
+        $cartItem->setQuantity($request->getPayload()->get('quantity', 1));
+        $cartItem = $shoppingCart->addCartItem($cartItem);
+
+        $this->entityManager->persist($cartItem);
+        $this->entityManager->flush();
+        
+        return $this->json([
+            'item' => $cartItem->toArray(),
+        ]);
+    }
+
+    #[Route('/cart/{product}', name: 'remove_from_cart', methods: ['DELETE'])]
+    public function removeFromCart(Request $request, Product $product)
+    {
+        $shoppingCart = $this->entityManager->getRepository(ShoppingCart::class)->find(1);
+
+        $cartItem = new CartItem();
+        $cartItem->addProduct($product);
+        $cartItem->setQuantity($request->getPayload()->get('quantity', 1));
+        $cartItem = $shoppingCart->removeCartItem($cartItem);
+
+        $this->entityManager->persist($cartItem);
+        $this->entityManager->flush();
+        
+        return $this->json([
+            'item' => $cartItem->toArray(),
+        ]);
+    }
 }
