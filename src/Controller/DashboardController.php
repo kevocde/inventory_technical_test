@@ -26,6 +26,12 @@ class DashboardController extends AbstractController
         $inventories = $this->entityManager->getRepository(Inventory::class)->findAll();
         $shoppingCart = $this->entityManager->getRepository(ShoppingCart::class)->find(1);
 
+        if (!$shoppingCart) {
+            $shoppingCart = new ShoppingCart();
+            $this->entityManager->persist($shoppingCart);
+            $this->entityManager->flush();
+        }
+
         return $this->json([
             'products' => [
                 'items' => array_map(fn(Inventory $inventory) => $inventory->toArray(), $inventories),
@@ -38,6 +44,12 @@ class DashboardController extends AbstractController
     public function addToCart(Request $request, Product $product)
     {
         $shoppingCart = $this->entityManager->getRepository(ShoppingCart::class)->find(1);
+
+        if (!$shoppingCart) {
+            $shoppingCart = new ShoppingCart();
+            $this->entityManager->persist($shoppingCart);
+            $this->entityManager->flush();
+        }
 
         $cartItem = new CartItem();
         $cartItem->addProduct($product);
